@@ -137,6 +137,8 @@ DWH_ROLE_ARN = myClusterProps['IamRoles'][0]['IamRoleArn']
 print("DWH_ENDPOINT :: ", DWH_ENDPOINT)
 print("DWH_ROLE_ARN :: ", DWH_ROLE_ARN)
 
+#TODO: add ARN to dwh.cfg (and ENdpoint = host?)
+
 
 try:
     print('Opening incoming TCP port to access the cluster endpoint')

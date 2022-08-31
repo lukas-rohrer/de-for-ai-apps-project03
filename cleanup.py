@@ -5,6 +5,7 @@ import boto3
 
 def main():
     config = configparser.ConfigParser()
+    config.optionxform = str
     config.read('dwh.cfg')
 
     KEY                    = config.get('AWS','KEY')
@@ -52,6 +53,16 @@ def main():
         iam.delete_role(RoleName=DWH_IAM_ROLE_NAME)
     except Exception as e:
         print(e)
+
+
+    config["DWH"]["DWH_ENDPOINT"] = ""
+    config["IAM_ROLE"]["ARN"] = ""
+    config['AWS']['KEY'] = ""
+    config['AWS']['SECRET'] = ""
+
+    with open('dwh.cfg', 'w') as configfile:
+        config.write(configfile, space_around_delimiters=False)
+
 
     
 if __name__ == "__main__":

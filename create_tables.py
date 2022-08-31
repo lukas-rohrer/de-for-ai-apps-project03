@@ -16,13 +16,19 @@ def create_tables(cur, conn):
 
 
 def main():
+    print("Reading config.")
     config = configparser.ConfigParser()
     config.read('dwh.cfg')
 
-    conn = psycopg2.connect("host={} dbname={} user={} password={} port={}".format(*config['CLUSTER'].values()))
+    print("Connecting to database.")
+    conn = psycopg2.connect("host={} dbname={} user={} password={} port={}".format(config["DWH"]["DWH_ENDPOINT"], config["DWH"]["DWH_DB"], config["DWH"]["DWH_DB_USER"], config["DWH"]["DWH_DB_PASSWORD"], config["DWH"]["DWH_PORT"]))
+    print("Succesfully connected to database.")
     cur = conn.cursor()
 
+    print("Dropping all tables.")
     drop_tables(cur, conn)
+    
+    print("Creating tables.")
     create_tables(cur, conn)
 
     conn.close()

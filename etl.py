@@ -4,12 +4,14 @@ from sql_queries import copy_table_queries, insert_table_queries
 
 
 def load_staging_tables(cur, conn):
+    """copies the data from S3 into the staging tables"""
     for query in copy_table_queries:
         cur.execute(query)
         conn.commit()
 
 
 def insert_tables(cur, conn):
+    """transforms and inserts the data from the staging tables into the tables of the star schema"""
     for query in insert_table_queries:
         cur.execute(query)
         conn.commit()
@@ -27,7 +29,7 @@ def main():
     print("Copying the data into the staging tables.")
     load_staging_tables(cur, conn)
 
-    # insert_tables(cur, conn)
+    insert_tables(cur, conn)
 
     conn.close()
 

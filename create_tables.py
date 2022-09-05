@@ -4,12 +4,14 @@ from sql_queries import create_table_queries, drop_table_queries
 
 
 def drop_tables(cur, conn):
+    """drops all the tables in the db to ensure a fresh start"""
     for query in drop_table_queries:
         cur.execute(query)
         conn.commit()
 
 
 def create_tables(cur, conn):
+    """create all the tables as specified in sql_queries.py"""
     for query in create_table_queries:
         cur.execute(query)
         conn.commit()

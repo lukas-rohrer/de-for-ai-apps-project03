@@ -1,9 +1,10 @@
-# goal: delete redshift cluster and detach roles
+
 import configparser
 import boto3
 
 
 def main():
+    """run this script to delete the redshift cluster and to reset the configs"""
     config = configparser.ConfigParser()
     config.optionxform = str
     config.read('dwh.cfg')

@@ -4,7 +4,6 @@ data/
 event_data/
 images/
 event_datafile_new.csv
-dwh.cfg
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

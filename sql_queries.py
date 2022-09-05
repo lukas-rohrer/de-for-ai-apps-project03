@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS staging_events(
     sessionId int,
     song varchar(max),
     status int,
-    ts double precision,
+    ts timestamp,
     userAgent varchar(255),
     userId int
 )
@@ -57,7 +57,6 @@ CREATE TABLE IF NOT EXISTS staging_songs(
 """)
 
 # postgres serial is not supported by redshift -> use int IDENTITY(0,1)
-#TODO froeign keys drin lassen?
 songplay_table_create = ("""
 CREATE TABLE IF NOT EXISTS songplays(
     songplay_id int IDENTITY(0,1) primary key,
@@ -72,7 +71,6 @@ CREATE TABLE IF NOT EXISTS songplays(
 )
 """)
 
-
 user_table_create = ("""CREATE TABLE IF NOT EXISTS users (
     user_id integer primary key sortkey,
     first_name varchar(255) NOT NULL,
@@ -82,7 +80,6 @@ user_table_create = ("""CREATE TABLE IF NOT EXISTS users (
 )    
 """)
 
-#TODO sortkey von präsi so übernommen
 song_table_create = ("""CREATE TABLE IF NOT EXISTS songs (
     song_id varchar(255) primary key sortkey,
     title varchar(255) NOT NULL,
@@ -154,7 +151,11 @@ https://docs.aws.amazon.com/redshift/latest/dg/merge-create-staging-table.html
 
 
 songplay_table_insert = ("""
-    
+    insert into songplays (start_time, user_id, level, song_id, artist_id, session_id, location, user_agent)
+    select 
+    from staging_events se
+    join staging_songs ss on (se.song = ss.title and se.artist = ss.artist_name and se.length = ss.duration)
+    where se.page = 'NextSong';
 """)
 
 
@@ -167,6 +168,7 @@ songplay_table_insert = ("""
 # """)
 
 # this query ensures the latest plan information is used for the users and eliminates duplicate user_ids
+# inspired from: https://docs.aws.amazon.com/redshift/latest/dg/merge-replacing-existing-rows.html
 user_table_insert = ("""
     create temp table staging_users (like users);
 
@@ -198,13 +200,27 @@ user_table_insert = ("""
 
 song_table_insert = ("""
     insert into songs (song_id, title, artist_id, year, duration)
-    select 
+    select distinct song_id, title, artist_id, year, duration from staging_songs
+    where song_id is not null;
 """)
 
 artist_table_insert = ("""
+    insert into artists (artist_id, name, location, latitude, longitude)
+    select distinct artist_id, artist_name, artist_location, artist_latitude, artist_longitude
+    from staging_songs
+    where artist_id is not null;
 """)
 
 time_table_insert = ("""
+    insert into time (start_time, hour, day, week, month, year, weekday)
+    select distinct (start_time)
+        extract(hour from start_time)
+        extract(day from start_time)
+        extract(week from start_time)
+        extract(month from start_time)
+        extract(year from start_time)
+        extract(dayofweek from start_time)
+    from songplays;
 """)
 
 # QUERY LISTS

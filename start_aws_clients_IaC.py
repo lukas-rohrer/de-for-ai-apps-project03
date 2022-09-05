@@ -5,6 +5,7 @@ import json
 import psycopg2
 
 def main():
+    """run this script to create a redshift cluster and set all the necessary configs"""
 
     config = configparser.ConfigParser()
     config.optionxform = str

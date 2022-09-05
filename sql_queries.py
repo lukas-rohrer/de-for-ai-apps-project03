@@ -152,7 +152,7 @@ https://docs.aws.amazon.com/redshift/latest/dg/merge-create-staging-table.html
 
 songplay_table_insert = ("""
     insert into songplays (start_time, user_id, level, song_id, artist_id, session_id, location, user_agent)
-    select 
+    select se.ts, se.userId, se.level, ss.song_id, ss.artist_id, se.session_id, se.location, se.user_agent
     from staging_events se
     join staging_songs ss on (se.song = ss.title and se.artist = ss.artist_name and se.length = ss.duration)
     where se.page = 'NextSong';
